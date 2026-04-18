@@ -8,6 +8,8 @@ import type {
   OutlineNode,
   ProjectData,
   ProjectSummary,
+  RecommendEntitiesInput,
+  RecommendEntityItem,
   TimelineData,
   WorldEntry
 } from '@shared/models';
@@ -69,6 +71,11 @@ export const api = {
   }),
   extractEntities: (payload: { projectId: string; chapterId: string; content: string }) =>
     request<{ items: Array<{ name: string; type: string; excerpt: string }> }>('/ai/extract', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }),
+  recommendCharacters: (payload: RecommendEntitiesInput) =>
+    request<{ items: RecommendEntityItem[] }>('/ai/recommend-characters', {
       method: 'POST',
       body: JSON.stringify(payload)
     })

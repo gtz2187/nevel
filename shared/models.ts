@@ -243,3 +243,18 @@ export interface ExtractEntitiesInput {
   chapterId: string;
   content: string;
 }
+
+export interface RecommendEntitiesInput {
+  projectId: string;
+  chapterId?: string;
+  content: string;
+  selectedCharacterIds?: string[];
+  limit?: number;
+}
+
+export interface RecommendEntityItem {
+  id: string;
+  name: string;
+  score: number;
+  reasons: string[];
+}
