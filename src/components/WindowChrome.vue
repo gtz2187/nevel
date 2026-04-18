@@ -51,7 +51,7 @@ async function maximize() {
 .green { background: #28c840; }
 .title {
   text-align: center;
-  color: #d8daea;
+  color: #2f5a43;
   font-size: 13px;
   letter-spacing: 0.08em;
 }

@@ -188,7 +188,9 @@ export interface AudioTrack {
 
 export interface AISettings {
   provider: string;
+  apiBaseUrl: string;
   apiKeyHint: string;
+  apiKey: string;
   model: string;
   temperature: number;
   tone: string;

@@ -35,9 +35,13 @@
     <section class="card card-pad">
       <div class="title-md">AI 设置</div>
       <label class="field"><span class="muted">提供商</span><input v-model="draft.ai.provider" /></label>
+      <label class="field"><span class="muted">API Base URL</span><input v-model="draft.ai.apiBaseUrl" placeholder="https://api.openai.com/v1" /></label>
+      <label class="field"><span class="muted">API Key（本地保存）</span><input v-model="draft.ai.apiKey" type="password" placeholder="sk-..." /></label>
       <label class="field"><span class="muted">模型</span><input v-model="draft.ai.model" /></label>
       <label class="field"><span class="muted">温度</span><input v-model.number="draft.ai.temperature" type="number" step="0.1" /></label>
       <label class="field"><span class="muted">语气</span><input v-model="draft.ai.tone" /></label>
+      <label class="row gap-8 muted"><input type="checkbox" v-model="draft.ai.allowWeb" />允许联网检索</label>
+      <div class="muted">说明：填写 Base URL、API Key、模型后，AI 助手和实体提取会优先走在线模型；留空则回退本地占位逻辑。</div>
     </section>
 
     <section class="card card-pad">
