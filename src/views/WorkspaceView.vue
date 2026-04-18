@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspace';
 import WindowChrome from '@/components/WindowChrome.vue';
@@ -47,6 +47,34 @@ const map = {
 
 const currentComponent = computed(() => map[store.currentModule]);
 
+
+function handleKeydown(event: KeyboardEvent) {
+  const meta = event.metaKey || event.ctrlKey;
+  if (meta && event.key.toLowerCase() === 'k') {
+    event.preventDefault();
+    store.commandPaletteOpen = true;
+    return;
+  }
+  if (meta && event.key.toLowerCase() === 'j') {
+    event.preventDefault();
+    store.aiAssistantOpen = true;
+    return;
+  }
+  if (meta && event.shiftKey && event.key.toLowerCase() === 'f') {
+    event.preventDefault();
+    store.focusMode = !store.focusMode;
+    return;
+  }
+  if (event.key === 'Escape' && store.commandPaletteOpen) {
+    store.commandPaletteOpen = false;
+    return;
+  }
+  if (event.key === 'Escape' && store.aiAssistantOpen) {
+    store.aiAssistantOpen = false;
+    return;
+  }
+}
+
 onMounted(async () => {
   const projectId = String(route.params.projectId);
   await store.openProject(projectId);
@@ -61,6 +89,14 @@ watch(
     store.currentModule = value as any;
   }
 );
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown);
+});
 </script>
 
 <style scoped>
