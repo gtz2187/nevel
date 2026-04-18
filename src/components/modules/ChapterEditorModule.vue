@@ -56,6 +56,21 @@
       </label>
 
       <div class="title-sm">出场人物</div>
+      <div class="row gap-8" style="margin-bottom: 8px;">
+        <button class="ghost" :disabled="recommendingCharacters" @click="recommendCharacters">
+          {{ recommendingCharacters ? '推荐中...' : 'AI 推荐人物' }}
+        </button>
+      </div>
+      <div v-if="recommendedCharacters.length" class="recommend-list">
+        <div v-for="item in recommendedCharacters" :key="item.id" class="recommend-item">
+          <div class="title-sm">
+            {{ item.name }}
+            <span class="badge">推荐</span>
+            <span class="muted">分值 {{ item.score }}</span>
+          </div>
+          <div class="muted">{{ item.reasons.join(' / ') }}</div>
+        </div>
+      </div>
       <div class="chips">
         <button
           v-for="character in project.characters"
@@ -135,6 +150,13 @@
           </div>
         </div>
       </div>
+
+      <ModuleAIAssistant
+        module-name="正文写作"
+        purpose="围绕当前章节给出情节推进、人物动机和段落优化建议"
+        placeholder="例如：帮我重写这一章结尾，让冲突更强、但人物不崩"
+        suggested-question="请基于当前章节内容指出 3 个可强化冲突的改写点，并给出示例。"
+      />
     </section>
   </div>
   <div v-else class="empty-state">请选择一个章节进入写作</div>
@@ -146,7 +168,8 @@ import { useWorkspaceStore } from '@/stores/workspace';
 import { markdownToHtml } from '@/lib/format';
 import { api } from '@/lib/api';
 import { randomUUID } from '@/utils/uuid';
-import type { ChapterDocument } from '@shared/models';
+import type { ChapterDocument, RecommendEntityItem } from '@shared/models';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);
@@ -155,6 +178,8 @@ const mode = ref<'edit' | 'preview'>('edit');
 const tagInput = ref('');
 const extracting = ref(false);
 const extracted = ref<Array<{ name: string; type: string; excerpt: string }>>([]);
+const recommendingCharacters = ref(false);
+const recommendedCharacters = ref<RecommendEntityItem[]>([]);
 const autoSaving = ref(false);
 const lastAutoSaveAt = ref('');
 let autoSaveTimer: ReturnType<typeof setInterval> | null = null;
@@ -183,6 +208,8 @@ watch(
     if (!value) return;
     Object.assign(draft, JSON.parse(JSON.stringify(value)));
     lastSavedSignature = chapterSignature();
+    recommendedCharacters.value = [];
+    extracted.value = [];
   },
   { immediate: true }
 );
@@ -290,6 +317,23 @@ async function extract() {
   }
 }
 
+async function recommendCharacters() {
+  if (!project.value || !draft.id) return;
+  recommendingCharacters.value = true;
+  try {
+    const result = await api.recommendCharacters({
+      projectId: project.value.id,
+      chapterId: draft.id,
+      content: draft.markdown,
+      selectedCharacterIds: draft.characterIds,
+      limit: 6
+    });
+    recommendedCharacters.value = result.items;
+  } finally {
+    recommendingCharacters.value = false;
+  }
+}
+
 async function createFromExtract(item: { name: string; type: string; excerpt: string }) {
   if (!project.value) return;
   if (['人物', 'character', 'CHARACTER'].includes(item.type)) {
@@ -375,6 +419,16 @@ function dismissExtract(item: { name: string; type: string }) {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.04);
   padding: 10px;
+}
+.recommend-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.recommend-item {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 8px;
 }
 .autosave-tip {
   margin-top: 10px;

@@ -66,6 +66,14 @@
         <span class="badge">Electron 桌面版</span>
       </div>
     </section>
+
+    <ModuleAIAssistant
+      class="full-row"
+      module-name="仪表盘"
+      purpose="总结当前项目进度风险，并给出今天最值得推进的三件事"
+      placeholder="例如：帮我制定今天 90 分钟写作冲刺计划"
+      suggested-question="请根据当前进度给出今天最优先的三项写作任务，并解释原因。"
+    />
   </div>
   <div v-else class="empty-state">未加载项目</div>
 </template>
@@ -73,6 +81,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);
@@ -106,5 +115,8 @@ const recentChapters = computed(() => {
 }
 .recent-item {
   margin-top: 10px;
+}
+.full-row {
+  grid-column: 1 / -1;
 }
 </style>

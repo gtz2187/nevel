@@ -67,6 +67,7 @@ async function addChapter() {
   font-size: 18px;
   font-weight: 700;
   padding: 4px 2px 10px;
+  color: #245138;
 }
 .nav-list, .chapter-list {
   display: grid;
@@ -75,23 +76,28 @@ async function addChapter() {
 .nav-btn, .chapter-btn {
   width: 100%;
   text-align: left;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 12px;
   display: grid;
   gap: 4px;
+  border: 1px solid rgba(52, 122, 81, 0.16);
+  background: rgba(255, 255, 255, 0.46);
 }
 .nav-btn {
   grid-template-columns: 26px 1fr;
   align-items: center;
 }
 .nav-btn.active, .chapter-btn.active {
-  background: rgba(140, 128, 255, 0.22);
+  background: linear-gradient(120deg, rgba(84, 182, 119, 0.27), rgba(191, 243, 212, 0.3));
+  border-color: rgba(58, 151, 95, 0.42);
+  box-shadow: 0 10px 18px rgba(73, 146, 98, 0.18);
 }
 .meta { font-size: 12px; }
 .section-title {
   margin-top: 8px;
   font-size: 12px;
   letter-spacing: 0.08em;
+  color: #46715c;
 }
 .chapter-list {
   flex: 1;

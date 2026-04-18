@@ -55,11 +55,6 @@ function handleKeydown(event: KeyboardEvent) {
     store.commandPaletteOpen = true;
     return;
   }
-  if (meta && event.key.toLowerCase() === 'j') {
-    event.preventDefault();
-    store.aiAssistantOpen = true;
-    return;
-  }
   if (meta && event.shiftKey && event.key.toLowerCase() === 'f') {
     event.preventDefault();
     store.focusMode = !store.focusMode;
@@ -67,10 +62,6 @@ function handleKeydown(event: KeyboardEvent) {
   }
   if (event.key === 'Escape' && store.commandPaletteOpen) {
     store.commandPaletteOpen = false;
-    return;
-  }
-  if (event.key === 'Escape' && store.aiAssistantOpen) {
-    store.aiAssistantOpen = false;
     return;
   }
 }
@@ -110,7 +101,8 @@ onBeforeUnmount(() => {
   min-width: 0;
   height: calc(100vh - 196px);
   padding: 18px;
-  border-radius: 24px;
+  border-radius: 26px;
   overflow-y: auto;
+  border: 1px solid rgba(57, 129, 84, 0.18);
 }
 </style>

@@ -56,6 +56,13 @@
           <span v-for="entry in linkedEntries" :key="entry.id" class="badge">{{ entry.name }}</span>
         </div>
       </div>
+
+      <ModuleAIAssistant
+        module-name="世界观"
+        purpose="补全设定细节、统一规则并发现设定冲突"
+        placeholder="例如：帮我扩展这个设定的社会影响和副作用"
+        suggested-question="请检查当前词条是否和已有设定冲突，并给出可兼容的修订版本。"
+      />
     </section>
 
     <div v-else class="empty-state">请选择或创建一个词条</div>
@@ -67,6 +74,7 @@ import { computed, ref, watch } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
 import { randomUUID } from '@/utils/uuid';
 import type { WorldEntry } from '@shared/models';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);

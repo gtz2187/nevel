@@ -47,6 +47,13 @@
           <li>状态为“已完成”的章节会参与进度统计。</li>
         </ul>
       </div>
+
+      <ModuleAIAssistant
+        module-name="大纲"
+        purpose="优化章节结构节奏，发现情节断层"
+        placeholder="例如：请帮我把第一卷大纲压缩成更有节奏的 8 章"
+        suggested-question="请评估当前大纲节奏，指出拖沓和缺失承接的位置，并给出重排建议。"
+      />
     </section>
   </div>
   <div v-else class="empty-state">未加载项目</div>
@@ -58,6 +65,7 @@ import { randomUUID } from '@/utils/uuid';
 import { useWorkspaceStore } from '@/stores/workspace';
 import type { OutlineNode } from '@shared/models';
 import OutlineNodeItem from './OutlineNodeItem.vue';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);

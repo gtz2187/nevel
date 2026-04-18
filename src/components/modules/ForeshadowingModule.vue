@@ -81,6 +81,13 @@
         <button class="ghost" @click="markRevealedNow">标记为已揭示（当前章节）</button>
         <button class="ghost" @click="clearReveal">清除揭示状态</button>
       </div>
+
+      <ModuleAIAssistant
+        module-name="伏笔管理"
+        purpose="评估伏笔埋设与回收质量，避免硬拐和忘埋忘收"
+        placeholder="例如：这个伏笔放在第几章揭示最自然？"
+        suggested-question="请评估当前伏笔的埋设与揭示时机，并给出更自然的回收方案。"
+      />
     </section>
 
     <section v-else class="empty-state">请选择或创建一个伏笔</section>
@@ -92,6 +99,7 @@ import { computed, ref, watch } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
 import { randomUUID } from '@/utils/uuid';
 import type { ForeshadowingItem } from '@shared/models';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);

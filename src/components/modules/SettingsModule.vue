@@ -55,6 +55,13 @@
       </div>
       <button class="primary" @click="save">保存全部设置</button>
     </section>
+
+    <ModuleAIAssistant
+      module-name="设置中心"
+      purpose="根据创作习惯给出参数调优建议"
+      placeholder="例如：我写作容易分心，帮我推荐一组设置参数"
+      suggested-question="请基于长篇小说创作场景，给出一套提高专注度的编辑器与 AI 参数配置建议。"
+    />
   </div>
   <div v-else class="empty-state">未加载项目</div>
 </template>
@@ -64,6 +71,7 @@ import { computed, ref, watch } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
 import type { AppSettings } from '@shared/models';
 import { randomUUID } from '@/utils/uuid';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);

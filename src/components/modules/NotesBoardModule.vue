@@ -20,6 +20,13 @@
         ></textarea>
       </div>
     </div>
+
+    <ModuleAIAssistant
+      module-name="灵感便签板"
+      purpose="把零散灵感整理成可执行剧情、章节或人物草案"
+      placeholder="例如：把这些便签整理成一个三幕式剧情结构"
+      suggested-question="请把我当前便签里的想法整理成可执行的章节大纲草稿。"
+    />
   </div>
   <div v-else class="empty-state">未加载项目</div>
 </template>
@@ -28,6 +35,7 @@
 import { computed } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
 import { randomUUID } from '@/utils/uuid';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);

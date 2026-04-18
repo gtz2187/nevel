@@ -111,6 +111,13 @@
           </div>
         </div>
       </div>
+
+      <ModuleAIAssistant
+        module-name="时间线"
+        purpose="检查事件前后逻辑与时间冲突，并优化节奏"
+        placeholder="例如：帮我找出这条时间线里可能矛盾的地方"
+        suggested-question="请检查当前时间线事件的顺序是否合理，并指出潜在冲突和修复方案。"
+      />
     </section>
 
     <div v-else class="empty-state">请选择或创建一条时间线</div>
@@ -122,6 +129,7 @@ import { computed, ref, watch } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
 import { randomUUID } from '@/utils/uuid';
 import type { TimelineData, TimelineEvent } from '@shared/models';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);

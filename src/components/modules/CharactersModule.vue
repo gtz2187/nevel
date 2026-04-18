@@ -104,6 +104,13 @@
           </g>
         </svg>
       </div>
+
+      <ModuleAIAssistant
+        module-name="人物管理"
+        purpose="打磨人物设定、关系张力和人物弧线"
+        placeholder="例如：帮我检查这个人物是否立体，并补 3 条反差细节"
+        suggested-question="请检查当前人物档案是否存在扁平化问题，并补充可直接落地的优化建议。"
+      />
     </section>
 
     <div v-else class="empty-state">请选择或创建一个人物</div>
@@ -115,6 +122,7 @@ import { computed, ref, watch } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
 import { randomUUID } from '@/utils/uuid';
 import type { CharacterProfile, CharacterRelationship, Importance } from '@shared/models';
+import ModuleAIAssistant from './ModuleAIAssistant.vue';
 
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);
