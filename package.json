@@ -62,6 +62,9 @@
     "directories": {
       "buildResources": "build"
     },
+    "asarUnpack": [
+      "dist-server/**"
+    ],
     "mac": {
       "category": "public.app-category.productivity"
     },
