@@ -14,7 +14,7 @@
     "dev:dev-electron-build": "tsc -p electron/tsconfig.json --watch",
     "build": "npm run build:renderer && npm run build:server && npm run build:electron",
     "build:renderer": "vite build",
-    "build:server": "tsc -p server/tsconfig.json",
+    "build:server": "tsc -p server/tsconfig.json && node -e \"require('node:fs').copyFileSync('server/package.json', 'dist-server/server/package.json')\"",
     "build:electron": "tsc -p electron/tsconfig.json",
     "dist": "npm run build && electron-builder",
     "dist:win": "npm run build && electron-builder --win nsis",
