@@ -167,8 +167,8 @@ function run(item: PaletteItem) {
   border: 1px solid transparent;
 }
 .result.active {
-  border-color: rgba(76, 150, 98, 0.55);
-  background: rgba(124, 204, 147, 0.22);
+  border-color: rgba(82, 168, 107, 0.6);
+  background: rgba(122, 203, 143, 0.26);
 }
 .empty {
   padding: 16px;
