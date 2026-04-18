@@ -29,9 +29,10 @@ async function maximize() {
   align-items: center;
   height: 54px;
   padding: 0 14px;
-  border-radius: 18px;
+  border-radius: 20px;
   margin-bottom: 16px;
   -webkit-app-region: drag;
+  border: 1px solid rgba(55, 128, 83, 0.22);
 }
 .traffic {
   display: flex;
@@ -45,15 +46,18 @@ async function maximize() {
   padding: 0;
   min-width: 12px;
   -webkit-app-region: no-drag;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48);
 }
 .red { background: #ff5f57; }
 .yellow { background: #febc2e; }
 .green { background: #28c840; }
 .title {
   text-align: center;
-  color: #d8daea;
+  color: #29553d;
   font-size: 13px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
+  font-weight: 600;
 }
 .actions {
   display: flex;

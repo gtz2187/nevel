@@ -200,12 +200,13 @@ function toErrorMessage(error: unknown, fallback: string) {
 <style scoped>
 .hero {
   min-height: 112px;
-  border-radius: 26px;
+  border-radius: 28px;
   padding: 22px;
   margin-bottom: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border: 1px solid rgba(54, 132, 85, 0.2);
 }
 
 .path-tip,
@@ -216,7 +217,8 @@ function toErrorMessage(error: unknown, fallback: string) {
 }
 
 .error-tip {
-  color: #ffd7e2;
+  color: #8c3131;
+  background: rgba(255, 227, 227, 0.7);
 }
 
 .projects-grid {
@@ -226,8 +228,9 @@ function toErrorMessage(error: unknown, fallback: string) {
 }
 
 .project-card {
-  border-radius: 24px;
+  border-radius: 26px;
   overflow: hidden;
+  border: 1px solid rgba(56, 130, 85, 0.16);
 }
 
 .cover {
@@ -248,7 +251,7 @@ function toErrorMessage(error: unknown, fallback: string) {
 .dialog-mask {
   position: fixed;
   inset: 0;
-  background: rgba(4, 6, 18, 0.6);
+  background: rgba(14, 67, 40, 0.26);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,6 +263,7 @@ function toErrorMessage(error: unknown, fallback: string) {
   width: min(480px, 100%);
   border-radius: 24px;
   padding: 20px;
+  border: 1px solid rgba(56, 130, 85, 0.28);
 }
 
 .dialog-header,
@@ -283,9 +287,9 @@ function toErrorMessage(error: unknown, fallback: string) {
 
 .dialog-input {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
+  border: 1px solid rgba(50, 128, 81, 0.28);
+  background: rgba(255, 255, 255, 0.74);
+  color: #193d2a;
   border-radius: 14px;
   padding: 12px 14px;
   font-size: 14px;
@@ -293,15 +297,15 @@ function toErrorMessage(error: unknown, fallback: string) {
 }
 
 .dialog-input:focus {
-  border-color: rgba(138, 125, 255, 0.7);
+  border-color: rgba(56, 154, 97, 0.72);
 }
 
 .dialog-error {
   margin-top: 14px;
   border-radius: 14px;
   padding: 12px 14px;
-  color: #ffd7e2;
-  background: rgba(255, 70, 110, 0.12);
+  color: #8c3131;
+  background: rgba(255, 226, 226, 0.84);
 }
 
 .small-btn {

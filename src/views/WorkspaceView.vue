@@ -110,7 +110,8 @@ onBeforeUnmount(() => {
   min-width: 0;
   height: calc(100vh - 196px);
   padding: 18px;
-  border-radius: 24px;
+  border-radius: 26px;
   overflow-y: auto;
+  border: 1px solid rgba(57, 129, 84, 0.18);
 }
 </style>
