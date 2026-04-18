@@ -53,11 +53,67 @@ npm install
 npm run dev
 ```
 
-## 打包
+## 打包成安装包（给其他电脑安装）
+
+> 建议在目标系统对应环境下打包（例如给 Windows 用户安装，尽量在 Windows 上执行 `dist:win`）。
 
 ```bash
-npm run build
-npx electron-builder
+# 1) 安装依赖
+npm install
+
+# 2) 全平台默认打包（根据当前系统生成可安装文件）
+npm run dist
+
+# 3) 指定平台打包（二选一/多选）
+npm run dist:win
+npm run dist:win:cn
+npm run dist:mac
+npm run dist:linux
+```
+
+打包成功后，安装包会出现在 `dist/` 目录中，常见文件例如：
+- Windows: `dist/*.exe`
+- macOS: `dist/*.dmg`
+- Linux: `dist/*.AppImage` / `dist/*.deb`
+
+在其他电脑上安装时，直接把对应安装包拷贝过去运行即可。
+
+### Windows 打包常见失败（超时/连不上 GitHub）排查
+
+如果你看到类似下面报错，通常不是代码问题，而是 `electron-builder` 下载 Electron 二进制时网络超时：
+
+- `ERR_ELECTRON_BUILDER_CANNOT_EXECUTE`
+- `Get "https://github.com/electron/electron/releases/...": wsarecv ... failed to respond`
+
+可按下面顺序处理：
+
+```bash
+# 方案 1（推荐，中国大陆网络）：使用 Electron 镜像
+npm run dist:win:cn
+
+# 方案 2：先设置镜像环境变量，再执行原命令（当前 CMD 窗口有效）
+set ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+npm run dist:win
+```
+
+补充说明：
+- `author is missed in the package.json` 只是警告，不会导致打包失败。
+- 失败根因一般是网络连通性（代理/防火墙/GitHub 访问）而不是源码构建问题。
+
+### 安装后黑屏排查（窗口打开但看不到 UI）
+
+若安装包能启动但只看到黑色窗口，常见原因是 `file://` 场景下前端资源路径错误（例如资源仍以 `/assets/...` 绝对路径加载）。
+
+当前项目已改为相对路径打包（`base: './'`），请按下面步骤重新构建并重装：
+
+```bash
+# 1) 清理旧产物
+rd /s /q dist
+rd /s /q dist-electron
+rd /s /q dist-server
+
+# 2) 重新打包
+npm run dist:win:cn
 ```
 
 ## 默认本地项目结构

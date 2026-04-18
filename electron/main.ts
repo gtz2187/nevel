@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain, Notification, shell } from 'electr
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fork, ChildProcess } from 'node:child_process';
+import { existsSync } from 'node:fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,7 +44,16 @@ function createMainWindow() {
 
 function maybeStartServer() {
   if (isDev) return;
-  const entry = path.join(app.getAppPath(), 'dist-server/main.js');
+  const appPath = app.getAppPath();
+  const candidateEntries = [
+    path.join(appPath, 'dist-server/server/main.js'),
+    path.join(appPath, 'dist-server/main.js')
+  ];
+  const entry = candidateEntries.find((file) => existsSync(file));
+  if (!entry) {
+    console.error('[mozhe] Nest server entry not found:', candidateEntries);
+    return;
+  }
   serverProcess = fork(entry, [], {
     stdio: 'ignore',
     detached: false
