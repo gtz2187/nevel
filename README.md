@@ -53,12 +53,29 @@ npm install
 npm run dev
 ```
 
-## 打包
+## 打包成安装包（给其他电脑安装）
+
+> 建议在目标系统对应环境下打包（例如给 Windows 用户安装，尽量在 Windows 上执行 `dist:win`）。
 
 ```bash
-npm run build
-npx electron-builder
+# 1) 安装依赖
+npm install
+
+# 2) 全平台默认打包（根据当前系统生成可安装文件）
+npm run dist
+
+# 3) 指定平台打包（二选一/多选）
+npm run dist:win
+npm run dist:mac
+npm run dist:linux
 ```
+
+打包成功后，安装包会出现在 `dist/` 目录中，常见文件例如：
+- Windows: `dist/*.exe`
+- macOS: `dist/*.dmg`
+- Linux: `dist/*.AppImage` / `dist/*.deb`
+
+在其他电脑上安装时，直接把对应安装包拷贝过去运行即可。
 
 ## 默认本地项目结构
 
