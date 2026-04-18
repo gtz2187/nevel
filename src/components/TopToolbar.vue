@@ -64,12 +64,13 @@ async function askAi() {
 <style scoped>
 .toolbar {
   height: 72px;
-  border-radius: 22px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 18px;
   margin-bottom: 16px;
+  border: 1px solid rgba(56, 126, 84, 0.18);
 }
 .left {
   display: grid;
@@ -83,7 +84,7 @@ async function askAi() {
   position: fixed;
   inset: 0;
   z-index: 1200;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(17, 71, 40, 0.28);
   display: grid;
   place-items: center;
 }
@@ -93,10 +94,12 @@ async function askAi() {
   gap: 12px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+  border-radius: 24px;
 }
 .answer pre {
   white-space: pre-wrap;
   line-height: 1.7;
   margin: 8px 0 0;
+  color: #1f4431;
 }
 </style>
