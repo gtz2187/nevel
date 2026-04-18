@@ -3,8 +3,12 @@
     <section class="card card-pad">
       <div class="row" style="justify-content:space-between; margin-bottom: 14px">
         <div class="title-md">大纲树</div>
-        <button class="primary" @click="addVolume">+ 新建卷</button>
+        <div class="row gap-8">
+          <button @click="expandAll = !expandAll" class="ghost">{{ expandAll ? '收起提示' : '展开提示' }}</button>
+          <button class="primary" @click="addVolume">+ 新建卷</button>
+        </div>
       </div>
+
       <ul class="tree list-reset">
         <OutlineNodeItem
           v-for="node in localOutline"
@@ -12,20 +16,36 @@
           :node="node"
           @add-child="handleAddChild"
           @open-chapter="openChapter"
+          @update-node="handleUpdateNode"
+          @remove="removeNode"
+          @move="moveNode"
         />
       </ul>
+
       <div class="row gap-12" style="margin-top:16px">
-        <button class="primary" @click="save">保存大纲</button>
+        <button class="primary" :disabled="saving" @click="save">{{ saving ? '保存中...' : '保存大纲' }}</button>
       </div>
     </section>
 
     <section class="card card-pad">
-      <div class="title-md">大纲说明</div>
-      <p class="muted">这一版先把卷-章-节数据结构、本地保存和章节联动落下来了。后续可继续加拖拽排序、颜色标签、转正文、章节卡片墙等。</p>
+      <div class="title-md">大纲概览</div>
+      <p class="muted">可直接编辑标题、状态、目标字数与摘要；支持节点新增、删除、同级内上移下移，并与章节编辑器联动。</p>
+
       <div class="card card-pad" style="margin-top: 16px">
         <div class="title-sm">当前规划</div>
-        <div class="muted">章节总数：{{ project.plannedChapters }}</div>
-        <div class="muted">已完成：{{ project.completedChapters }}</div>
+        <div class="muted">卷数：{{ stats.volumeCount }}</div>
+        <div class="muted">章节数：{{ stats.chapterCount }}</div>
+        <div class="muted">分节数：{{ stats.sectionCount }}</div>
+        <div class="muted">已完成章节：{{ completedChapterCount }}</div>
+      </div>
+
+      <div v-if="expandAll" class="card card-pad" style="margin-top: 12px;">
+        <div class="title-sm">使用建议</div>
+        <ul>
+          <li>章节节点可直接点击“进入正文”快速生成/打开章节。</li>
+          <li>推荐先维护卷与章节骨架，再补充分节和摘要。</li>
+          <li>状态为“已完成”的章节会参与进度统计。</li>
+        </ul>
       </div>
     </section>
   </div>
@@ -42,6 +62,8 @@ import OutlineNodeItem from './OutlineNodeItem.vue';
 const store = useWorkspaceStore();
 const project = computed(() => store.currentProject);
 const localOutline = ref<OutlineNode[]>([]);
+const saving = ref(false);
+const expandAll = ref(false);
 
 watch(
   () => project.value?.outline,
@@ -49,6 +71,24 @@ watch(
     localOutline.value = JSON.parse(JSON.stringify(value ?? []));
   },
   { immediate: true }
+);
+
+const stats = computed(() => {
+  const counters = { volumeCount: 0, chapterCount: 0, sectionCount: 0 };
+  const walk = (nodes: OutlineNode[]) => {
+    for (const node of nodes) {
+      if (node.type === 'volume') counters.volumeCount += 1;
+      if (node.type === 'chapter') counters.chapterCount += 1;
+      if (node.type === 'section') counters.sectionCount += 1;
+      walk(node.children);
+    }
+  };
+  walk(localOutline.value);
+  return counters;
+});
+
+const completedChapterCount = computed(() =>
+  (project.value?.chapters ?? []).filter((item) => item.status === '已完成').length
 );
 
 function addVolume() {
@@ -63,30 +103,64 @@ function addVolume() {
   });
 }
 
+function walkNodes<T>(
+  nodes: OutlineNode[],
+  handler: (node: OutlineNode, index: number, siblings: OutlineNode[]) => T | undefined
+): T | undefined {
+  for (let i = 0; i < nodes.length; i += 1) {
+    const result = handler(nodes[i], i, nodes);
+    if (result !== undefined) return result;
+    const childResult = walkNodes(nodes[i].children, handler);
+    if (childResult !== undefined) return childResult;
+  }
+  return undefined;
+}
+
 function addChild(parentId: string, type: OutlineNode['type']) {
-  const walk = (nodes: OutlineNode[]) => {
-    for (const node of nodes) {
-      if (node.id === parentId) {
-        node.children.push({
-          id: randomUUID(),
-          type,
-          title: type === 'chapter' ? `新章节` : '新分节',
-          status: '规划中',
-          targetWords: type === 'chapter' ? 3000 : 1200,
-          summary: '',
-          children: []
-        });
-        return true;
-      }
-      if (walk(node.children)) return true;
-    }
-    return false;
-  };
-  walk(localOutline.value);
+  walkNodes(localOutline.value, (node) => {
+    if (node.id !== parentId) return undefined;
+    node.children.push({
+      id: randomUUID(),
+      type,
+      title: type === 'chapter' ? `新章节` : '新分节',
+      status: '规划中',
+      targetWords: type === 'chapter' ? 3000 : 1200,
+      summary: '',
+      children: []
+    });
+    return true;
+  });
 }
 
 function handleAddChild(payload: { parentId: string; type: OutlineNode['type'] }) {
   addChild(payload.parentId, payload.type);
+}
+
+function handleUpdateNode(nextNode: OutlineNode) {
+  walkNodes(localOutline.value, (node) => {
+    if (node.id !== nextNode.id) return undefined;
+    Object.assign(node, nextNode);
+    return true;
+  });
+}
+
+function removeNode(nodeId: string) {
+  walkNodes(localOutline.value, (node, index, siblings) => {
+    if (node.id !== nodeId) return undefined;
+    siblings.splice(index, 1);
+    return true;
+  });
+}
+
+function moveNode(payload: { id: string; dir: -1 | 1 }) {
+  walkNodes(localOutline.value, (node, index, siblings) => {
+    if (node.id !== payload.id) return undefined;
+    const target = index + payload.dir;
+    if (target < 0 || target >= siblings.length) return true;
+    const [item] = siblings.splice(index, 1);
+    siblings.splice(target, 0, item);
+    return true;
+  });
 }
 
 function openChapter(node: OutlineNode) {
@@ -106,12 +180,12 @@ function openChapter(node: OutlineNode) {
 
 async function save() {
   if (!store.currentProject) return;
-  await fetch(`http://127.0.0.1:3777/api/projects/${store.currentProject.id}/outline`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(localOutline.value)
-  });
-  await store.openProject(store.currentProject.id);
+  saving.value = true;
+  try {
+    await store.updateOutline(localOutline.value);
+  } finally {
+    saving.value = false;
+  }
 }
 </script>
 
@@ -119,5 +193,9 @@ async function save() {
 .tree {
   display: grid;
   gap: 12px;
+}
+ul {
+  margin: 0;
+  padding-left: 20px;
 }
 </style>
