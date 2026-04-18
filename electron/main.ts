@@ -41,12 +41,31 @@ function createMainWindow() {
   }
 }
 
+function getServerEntryPath() {
+  if (isDev) {
+    return path.join(app.getAppPath(), 'dist-server/server/main.js');
+  }
+
+  return path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-server/server/main.js');
+}
+
 function maybeStartServer() {
   if (isDev) return;
-  const entry = path.join(app.getAppPath(), 'dist-server/server/main.js');
+
+  const entry = getServerEntryPath();
   serverProcess = fork(entry, [], {
-    stdio: 'ignore',
+    stdio: 'pipe',
     detached: false
+  });
+
+  serverProcess.on('error', (error) => {
+    console.error('[mozhe] failed to start bundled server:', error);
+  });
+
+  serverProcess.on('exit', (code, signal) => {
+    if (code !== 0) {
+      console.error('[mozhe] bundled server exited unexpectedly', { code, signal });
+    }
   });
 }
 
