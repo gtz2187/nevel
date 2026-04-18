@@ -43,7 +43,7 @@ function createMainWindow() {
 
 function maybeStartServer() {
   if (isDev) return;
-  const entry = path.join(app.getAppPath(), 'dist-server/main.js');
+  const entry = path.join(app.getAppPath(), 'dist-server/server/main.js');
   serverProcess = fork(entry, [], {
     stdio: 'ignore',
     detached: false
