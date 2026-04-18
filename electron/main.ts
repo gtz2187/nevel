@@ -1,14 +1,21 @@
 import { app, BrowserWindow, dialog, ipcMain, Notification, shell } from 'electron';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { fork, ChildProcess } from 'node:child_process';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+type ClosableServer = {
+  close: () => Promise<void>;
+};
+
+type ServerModule = {
+  startServer: () => Promise<ClosableServer>;
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const isDev = !app.isPackaged;
 let mainWindow: BrowserWindow | null = null;
-let serverProcess: ChildProcess | null = null;
+let serverApp: ClosableServer | null = null;
 
 function getRendererUrl() {
   return 'http://localhost:5173';
@@ -41,17 +48,24 @@ function createMainWindow() {
   }
 }
 
-function maybeStartServer() {
-  if (isDev) return;
-  const entry = path.join(app.getAppPath(), 'dist-server/main.js');
-  serverProcess = fork(entry, [], {
-    stdio: 'ignore',
-    detached: false
-  });
+function getServerEntryPath() {
+  return path.join(app.getAppPath(), 'dist-server/server/main.js');
 }
 
-app.whenReady().then(() => {
-  maybeStartServer();
+async function maybeStartServer() {
+  if (isDev) return;
+
+  try {
+    const entryUrl = pathToFileURL(getServerEntryPath()).href;
+    const serverModule = await import(entryUrl) as ServerModule;
+    serverApp = await serverModule.startServer();
+  } catch (error) {
+    console.error('[mozhe] failed to start bundled server:', error);
+  }
+}
+
+app.whenReady().then(async () => {
+  await maybeStartServer();
   createMainWindow();
 
   ipcMain.handle('window:minimize', () => mainWindow?.minimize());
@@ -90,6 +104,6 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('before-quit', () => {
-  serverProcess?.kill();
+app.on('before-quit', async () => {
+  await serverApp?.close();
 });
