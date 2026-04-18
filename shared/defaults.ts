@@ -39,7 +39,9 @@ export function defaultSettings(root: string): AppSettings {
     },
     ai: {
       provider: '通义千问',
+      apiBaseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
       apiKeyHint: '',
+      apiKey: '',
       model: 'qwen-plus',
       temperature: 0.7,
       tone: '专业严谨',

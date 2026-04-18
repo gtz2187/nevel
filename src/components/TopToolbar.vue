@@ -7,16 +7,38 @@
     <div class="right">
       <button class="ghost" @click="store.commandPaletteOpen = true">⌘K 搜索</button>
       <button class="ghost" @click="store.createSnapshot()">创建快照</button>
-      <button class="primary" @click="askAi">AI 助手</button>
+      <button class="primary" @click="store.aiAssistantOpen = true">AI 助手</button>
     </div>
+  </div>
+
+  <div v-if="store.aiAssistantOpen" class="assistant-mask" @click.self="store.aiAssistantOpen = false">
+    <section class="assistant-panel card card-pad">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="title-md">AI 写作助手</div>
+          <div class="muted">支持剧情梳理、矛盾排查、创意发散（Cmd/Ctrl + J）</div>
+        </div>
+        <button class="ghost" @click="store.aiAssistantOpen = false">关闭</button>
+      </div>
+      <textarea v-model="question" rows="5" placeholder="例：请帮我检查第一卷中主角动机是否一致，并给出修改建议"></textarea>
+      <div class="row" style="justify-content:flex-end">
+        <button class="primary" :disabled="loading || !question.trim()" @click="askAi">{{ loading ? '请求中...' : '发送' }}</button>
+      </div>
+      <div v-if="store.aiOutput" class="answer card card-pad">
+        <div class="title-sm">AI 回复</div>
+        <pre>{{ store.aiOutput }}</pre>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useWorkspaceStore } from '@/stores/workspace';
 
 const store = useWorkspaceStore();
+const loading = ref(false);
+const question = ref('请概括当前第一卷的问题和机会');
 
 const title = computed(() => {
   if (!store.currentProject) return '墨者';
@@ -29,11 +51,12 @@ const subtitle = computed(() => {
 });
 
 async function askAi() {
-  const question = prompt('问 AI：', '请概括当前第一卷的问题和机会');
-  if (!question) return;
-  await store.askAI(question);
-  if (store.aiOutput) {
-    alert(store.aiOutput);
+  if (!question.value.trim()) return;
+  loading.value = true;
+  try {
+    await store.askAI(question.value.trim());
+  } finally {
+    loading.value = false;
   }
 }
 </script>
@@ -55,5 +78,25 @@ async function askAi() {
 .right {
   display: flex;
   gap: 10px;
+}
+.assistant-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.55);
+  display: grid;
+  place-items: center;
+}
+.assistant-panel {
+  width: min(900px, calc(100vw - 48px));
+  display: grid;
+  gap: 12px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.answer pre {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  margin: 8px 0 0;
 }
 </style>
